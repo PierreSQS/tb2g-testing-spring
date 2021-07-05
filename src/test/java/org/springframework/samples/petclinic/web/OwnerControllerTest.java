@@ -50,13 +50,14 @@ class OwnerControllerTest {
     }
 
 
+    // The new added Test
     @Test
     void testNewOwnerPostValid() throws Exception {
         mockMvc.perform(post("/owners/new")
-                    .param("firstName", "Jimmy")
-                    .param("lastName", "Buffett")
-                    .param("Address", "123 Duval St ")
-                    .param("city", "Key West")
+                    .param("firstName", "Pierrot")
+                    .param("lastName", "Mongonnam")
+                    .param("Address", "15 Rue Sawa")
+                    .param("city", "Douala")
                     .param("telephone", "3151231234"))
                 .andExpect(status().is3xxRedirection());
     }
