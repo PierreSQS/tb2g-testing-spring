@@ -60,8 +60,9 @@ class OwnerControllerTest {
     void testProcessCreationForm_ValidPath() throws Exception {
         // Given
         MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        // The ID is sent as Param, but will not be taken in account.
-        // Also see the comment in line77
+        // The ID is sent as Param, but will not be taken in account
+        // because not id field in Owner.
+        // Also see the comment in line78
         multiValueMap.add("id","4");
         multiValueMap.add("firstName","Owner");
         multiValueMap.add("lastName","Mock");
@@ -74,7 +75,8 @@ class OwnerControllerTest {
                 .andExpect(status().is3xxRedirection())
                 // Doesn't exists in this case
 //                .andExpect(model().attributeHasNoErrors("firstName,lastName,address,city,telephone"))
-                // we can not submit an id in the form the way the Controller is implemented!!!!
+                // we can not submit an id in the form the Owner Entity is implemented!!!!
+                // thus redirecting with null id!!!
                 .andExpect(view().name("redirect:/owners/null"))
                 .andDo(print());
     }
