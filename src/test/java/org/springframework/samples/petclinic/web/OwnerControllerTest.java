@@ -14,6 +14,8 @@ import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,6 +24,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.reset;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,7 +74,7 @@ class OwnerControllerTest {
             .andExpect(model().attributeHasErrors("owner"))
             .andExpect(model().attributeHasFieldErrors("owner", "address"))
             .andExpect(model().attributeHasFieldErrors("owner", "telephone"))
-            .andExpect(view().name("owners/createOrUpdateOwnerForm"));
+            .andExpect(view().name(OwnerController.VIEWS_OWNER_CREATE_OR_UPDATE_FORM));
     }
 
     @Test
@@ -119,6 +122,32 @@ class OwnerControllerTest {
         mockMvc.perform(get("/owners/new"))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("owner"))
-            .andExpect(view().name("owners/createOrUpdateOwnerForm"));
+            .andExpect(view().name(OwnerController.VIEWS_OWNER_CREATE_OR_UPDATE_FORM));
+    }
+
+    @Test
+    void testProcessUpdateOwnerForm_ValidPath() throws Exception {
+        MultiValueMap<String,String> multiValueMap = new LinkedMultiValueMap<>();
+        multiValueMap.add("firstName","firstNameParam");
+        multiValueMap.add("lastName","lastNameParam");
+        multiValueMap.add("city","Douala");
+        multiValueMap.add("address","20, Rue de Sawa");
+        multiValueMap.add("telephone","1234567");
+
+        // Works also
+//        mockMvc.perform(post("/owners/5/edit")
+        mockMvc.perform(post("/owners/{ownerId}/edit",5)
+                .params(multiValueMap))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/owners/{ownerId}"))
+                .andDo(print());
+    }
+
+    @Test
+    void testProcessUpdateOwnerForm_InvalidPath() throws Exception {
+        mockMvc.perform(post("/owners/4/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name(OwnerController.VIEWS_OWNER_CREATE_OR_UPDATE_FORM))
+                .andDo(print());
     }
 }
