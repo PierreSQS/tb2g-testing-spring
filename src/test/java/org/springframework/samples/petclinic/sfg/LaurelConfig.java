@@ -7,12 +7,8 @@ import org.springframework.context.annotation.Configuration;
 public class LaurelConfig {
 
     @Bean
-    public WordProducer wordProducer() {
+    public LaurelWordProducer wordProducer() {
         return new LaurelWordProducer();
     }
 
-    @Bean
-    public HearingInterpreter hearingInterpreter() {
-        return new HearingInterpreter(wordProducer());
-    }
 }
